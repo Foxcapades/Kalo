@@ -18,7 +18,11 @@
 package io.vulpine.lib.kalo;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -31,15 +35,19 @@ import static io.vulpine.lib.kalo.WorkbookUtil.sortColumns;
 /**
  * = Kalo
  *
- *
  * Kalo, in combination with {@link Poi} provides methods for easily working
  * with Apache POI.
+ *
+ * .Change Log
+ * v1.1:: 2017-04-06 +
+ *   * Added overloads for methods allowing the creation of workbooks with
+ *     multiple sheets using the new {@link Page} class.
  *
  * https://poi.apache.org/[Apache POI]
  * https://en.wikipedia.org/wiki/Poi_(food)[Poi & Kalo]
  *
  * @author mailto:elliefops@gmail.com[Ellie Harper]
- * @version 1
+ * @version 1.1
  * @since v0.1.0 - 2017-03-26
  */
 public final class Kalo
@@ -58,7 +66,24 @@ public final class Kalo
     final Class < T > type
   )
   {
-    return poi(items, type, new XSSFWorkbook());
+    return poi(items, type, "Sheet0", new XSSFWorkbook());
+  }
+
+  /**
+   * Create and populate an XSSF Workbook.
+   *
+   * @param sheets Pages to include in the workbook
+   *
+   * @return Generated workbook.
+   */
+  public Workbook xssf( final Page... sheets )
+  {
+    final Workbook book = new XSSFWorkbook();
+
+    for ( final Page sheet : sheets )
+      poi(sheet.getRows(), sheet.getType(), sheet.getSheetName(), book);
+
+    return book;
   }
 
   /**
@@ -75,7 +100,24 @@ public final class Kalo
     final Class < T > type
   )
   {
-    return poi(items, type, new HSSFWorkbook());
+    return poi(items, type, "Sheet0", new HSSFWorkbook());
+  }
+
+  /**
+   * Create and populate an HSSF Workbook.
+   *
+   * @param sheets Pages to include in the workbook
+   *
+   * @return Generated workbook.
+   */
+  public Workbook hssf( final Page... sheets )
+  {
+    final Workbook book = new HSSFWorkbook();
+
+    for ( final Page sheet : sheets )
+      poi(sheet.getRows(), sheet.getType(), sheet.getSheetName(), book);
+
+    return book;
   }
 
   /**
@@ -102,6 +144,24 @@ public final class Kalo
   }
 
   /**
+   * Create, populate, and write an XSSF Workbook to file.
+   *
+   * @param file   Output file.
+   * @param sheets Workbook pages.
+   */
+  public void writeXssf( final File file, final Page... sheets )
+  throws IOException
+  {
+    final FileOutputStream stream;
+
+    file.createNewFile();
+    stream = new FileOutputStream(file);
+
+    xssf(sheets).write(stream);
+    stream.close();
+  }
+
+  /**
    * Create, populate, and write an HSSF Workbook to file.
    *
    * @param items Items to serialize as rows.
@@ -124,15 +184,35 @@ public final class Kalo
     stream.close();
   }
 
+  /**
+   * Create, populate, and write an HSSF Workbook to file.
+   *
+   * @param file   Output file.
+   * @param sheets Workbook pages.
+   */
+  public void writeHssf( final File file, final Page... sheets )
+  throws IOException
+  {
+    final FileOutputStream stream;
+
+    file.createNewFile();
+    stream = new FileOutputStream(file);
+
+    hssf(sheets).write(stream);
+    stream.close();
+  }
+
   public < T > Workbook poi(
     final Collection < T > items,
     final Class < T > type,
+    final String sheetName,
     final Workbook workbook
   )
   {
-    final Sheet sheet = workbook.createSheet();
+    final Sheet sheet = workbook.createSheet(sheetName);
     final PropertyAggregator map = ClassUtils.parse(type);
     final Collection < Imu > sorted = sortColumns(map.columns());
+
     int row = 1;
 
     WorkbookUtil.parseHeaders(
@@ -162,6 +242,9 @@ public final class Kalo
         }
       }
     }
+
+    for ( int i = 0; i < sorted.size(); i++ )
+      sheet.autoSizeColumn(i);
 
     return workbook;
   }
