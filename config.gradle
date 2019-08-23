@@ -3,13 +3,13 @@ def config = new HashMap < String, HashMap < String, String > >();
 config.organization = new HashMap()
 config.organization.title = 'Vulpine IO'
 config.organization.slug  = 'io.vulpine'
-config.organization.key   = 'Vulpine-IO'
+config.organization.key   = 'Foxcapades'
 config.organization.site  = "https://github.com/${config.organization.key}"
 
 config.project = new HashMap()
 config.project.group       = 'lib'
 config.project.name        = 'Kalo'
-config.project.version     = '0.2.0'
+config.project.version     = '0.2.1'
 config.project.slug        = 'lib-kalo'
 config.project.jvm         = '1.8'
 config.project.description = 'Apache POI annotation based serialization.'
@@ -18,10 +18,10 @@ config.project.vcs         = "${config.organization.site}/${config.project.slug}
 config.project.tracker     = "${config.organization.site}/${config.project.slug}/issues"
 
 config.developer = new HashMap()
-config.developer.name  = 'Elizabeth Harper'
-config.developer.email = 'elliefops@gmail.com'
-config.developer.user  = 'elliefops'
-config.developer.site  = 'https://github.com/EllieFops'
+config.developer.name  = 'Elizabeth Paige Harper'
+config.developer.email = 'foxcapade@gmail.com'
+config.developer.user  = 'foxcapades'
+config.developer.site  = 'https://github.com/Foxcapades'
 
 config.license = new HashMap()
 config.license.name = 'Apache License, Version 2.0'
