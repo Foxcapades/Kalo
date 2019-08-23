@@ -1,0 +1,33 @@
+= Kalo
+
+Annotations for converting POJOs to Workbooks through Apache Poi.
+
+.Foo.java
+[source, java]
+----
+class Foo {
+  @Poi(header="Bar")
+  String barVal;
+  
+  Foo(String bv) {...}
+  
+  @Poi
+  int getFizz() {...}
+  
+  @Poi(index=1)
+  int getId() {...}
+}
+----
+
+.main method
+[source, java]
+----
+final var kalo = new Kalo();
+final var items = Arrays.asList(new Foo[]{new Foo("A"), new Foo("B")});
+
+// Create workbook:
+final var workbook = kalo.xssf(items, Foo.class);
+
+// Write out to file:
+kalo.writeXssf(new File("MyWorkbook.xlsx"), items, Foo.class);
+----
